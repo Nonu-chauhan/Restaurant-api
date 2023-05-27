@@ -1,0 +1,34 @@
+summary: Fetch many Restaurant
+tasks:
+  - id: step1_switch
+    fn: com.gs.switch
+    value: <%inputs.body.filterBy%>
+    cases:
+      location:
+        id: 1st
+        fn: com.gs.datastore 
+        args:  
+          datasource: postgres
+          data:
+           include:
+            menuItems: true 
+           where:
+            location: <% inputs.body.location %> 
+          config:
+           method: Restaurant.findMany
+      default:
+        id: default_case
+        fn: com.gs.datastore
+        args: 
+          datasource: postgres
+          data:
+           include:
+            menuItems: true
+          config:
+           method: Restaurant.findMany
+  - id: step2_switch
+    fn: com.gs.transform
+    args: |
+        <js% 
+          { code: 200, ...outputs.step1_switch } 
+        %>
